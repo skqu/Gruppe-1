@@ -1,0 +1,40 @@
+# Velkomst
+
+print("Velkommen til lommeregneren!")
+
+
+    # Valgmulighederne
+while True:
+    print("Vælg en regnemetode:")
+    print("1. Addition, 2. Subtraktion, 3. Multiplikation, 4. Division")
+
+
+        # Input brugerens valg
+    valg = input("Indtast dit valg (1/2/3/4): ")
+    if valg>"4":
+        print("fejl,skriv et af de fire tal")
+    if valg<"0":
+        print("fejl,skriv et af de fire tal")
+
+    if valg in ("1","2","3","4"):
+            tal1=float(input("skriv dit første nummer"))
+            tal2=float(input("skriv dit anden nummer"))
+
+    if valg=="1":
+        resualtet=tal1+tal2
+        print("resualtet er = ",resualtet)
+    elif valg=="2":
+        resualtet=tal1-tal2
+        print("resualtet er = ",resualtet)
+    elif valg=="3":
+        resualtet=tal1*tal2
+        print("resualtet er = ",resualtet)
+    elif valg=="4":
+        resualtet=tal1/tal2
+        print("reusualtet er = ",resualtet)
+        
+    fortsæt=input("vil du fortsæt ja eller nej ?" )
+    if fortsæt== "ja":
+                valg = input("Indtast dit valg (1/2/3/4): ")
+    if fortsæt== "nej":
+        break
