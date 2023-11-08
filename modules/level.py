@@ -12,13 +12,13 @@ class Tile(pygame.sprite.Sprite): #Cretes the tiles
         
 
 class Level():
-    def __init__(self, name, stage_nr, bg_color, hero_spawn = 0):
+    def __init__(self, name, stage_nr, bg_color, hero_spawn = [0,0]):
         self.str_name = name
         self.int_stage_nr = stage_nr
         self.lvlData = self.get_lvl_data(self.int_stage_nr)
         self.bg_color = bg_color
         self.hero_spawn = hero_spawn
-
+        
         
 
         #Monsters in room

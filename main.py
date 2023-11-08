@@ -33,9 +33,9 @@ while True:
         if event.type == pygame.KEYDOWN:
             key = event.key
 
-    Gamestate.state_manager(state = Gamestate.gameState, screen = screen, dt = dt, key = key) #Gets the gamestate from state module and displays it
+    Gamestate.state_manager(screen = screen, dt = dt, key = key) #Gets the gamestate from state module and displays it
     
     
     dt = clock.tick(60) / 1000 #Deltatime
-
+ 
     pygame.display.update() 
