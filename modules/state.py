@@ -19,9 +19,9 @@ class Gamestate():
         self.paused = False
         
 
-    def state_manager(self, state, screen, dt, key): #Manages the diffentent states
+    def state_manager(self, screen, dt, key): #Manages the diffentent states
         
-        match state: #Each state is customized in the switch eg - backgroundcolor, display elements
+        match self.gameState: #Each state is customized in the switch eg - backgroundcolor, display elements
             case "start_menu":
             
                 white = (255, 255, 255)
@@ -40,7 +40,7 @@ class Gamestate():
                 pass
     
             case "lvl1":
-
+                
                 self.main(screen = screen, hero = self.hero, dt = dt, level = self.level_1)
 
             case "lvl2":
