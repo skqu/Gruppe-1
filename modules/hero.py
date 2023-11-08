@@ -23,7 +23,7 @@ class Hero(pygame.sprite.Sprite):
 
         self.movement_speed = 400
 
-
+ 
 
     def collision(self, direction, sprite_group): #Check if player is colliding with walls
         if pygame.sprite.spritecollide(self, sprite_group, False): 

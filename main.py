@@ -37,6 +37,6 @@ while True:
     
     
     dt = clock.tick(60) / 1000 #Deltatime
- 
+  
 
     pygame.display.update() 
