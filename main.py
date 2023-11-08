@@ -7,7 +7,6 @@ from modules.state import Gamestate
 # !! Requires "pytmx" install with pip !!
 
 
-
 pygame.init()
 
 screen_x = 1280
@@ -24,6 +23,7 @@ dt = 0
 
 Gamestate = Gamestate()
 key = None
+mouse_pos = None
 
 while True:
     for event in pygame.event.get():
@@ -32,11 +32,14 @@ while True:
             exit()
         if event.type == pygame.KEYDOWN:
             key = event.key
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_pos = event.pos
+            print(mouse_pos)
 
-    Gamestate.state_manager(screen = screen, dt = dt, key = key) #Gets the gamestate from state module and displays it
+    Gamestate.state_manager(screen = screen, dt = dt, key = key, mouse_pos = mouse_pos) #Gets the gamestate from state module and displays it
     
     
     dt = clock.tick(60) / 1000 #Deltatime
   
 
-    pygame.display.update() 
+    pygame.display.update()  
