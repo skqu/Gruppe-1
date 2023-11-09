@@ -43,6 +43,6 @@ while True:
     
     
     dt = clock.tick(60) / 1000 #Deltatime
-    print(clock.get_fps())
+    #print(clock.get_fps())
     
     pygame.display.update()  

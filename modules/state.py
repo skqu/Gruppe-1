@@ -66,12 +66,23 @@ class Gamestate():
                 pass
     
             case "lvl1":
-                
-                self.main(screen = screen, hero = self.hero, dt = dt, level = self.level_1, key = key, monster = self.monster)
+                font = pygame.font.Font("./font/NebulousRegular.ttf", 48)
+                health_text = font.render(self.hero.health, True, white)
+
+
+                elements = health_text
+                self.main(screen = screen, hero = self.hero, dt = dt, level = self.level_1, key = key, monster = self.monster, elements = elemets)
 
             case "lvl2":
+                font = pygame.font.Font(None, 48)
+                health_text = font.render(str(f"{self.hero.health} hp"), True, "#ffffff")
+
+                monster_health_text = font.render(str(f"{self.monster.health} hp"), True, "#ffffff")
+
+                elements = health_text, monster_health_text
                 
-                self.main(screen = screen, hero = self.hero, dt = dt, level = self.level_2, key = key, monster = self.monster), 
+
+                self.main(screen = screen, hero = self.hero, dt = dt, level = self.level_2, key = key, monster = self.monster, elements = elements)
 
         
 
@@ -88,7 +99,7 @@ class Gamestate():
 
     def pause_menu(self, screen ,bg_color, elemets, key):
         
-        if elemets[3].collidepoint(self.mouse_pos): #Restart game
+        if  elemets[3].collidepoint(self.mouse_pos): #Restart game
             self.mouse_pos = (0,0)
             self.gameState = "lvl1"
             self.hero.rect.center = self.level_1.hero_spawn 
@@ -107,21 +118,21 @@ class Gamestate():
         
 
             
-    def main(self, screen, hero ,dt, level, key, monster, timer = 0): #The main game state
+    def main(self, screen, hero ,dt, level, key, monster, elements): #The main game state
 
         if key == pygame.K_ESCAPE:
             if not self.paused:
                 self.paused = True
                 self.prevGameState = self.gameState
                 self.gameState = "pause_game"
-        print(monster.draw()[0])
-        print(monster.draw()[1])
+        #print(monster.draw()[0])
+        #print(monster.draw()[1])
         
 
         key = pygame.key.get_pressed()
         hero.movement(key, level.get_lvl_walls(), dt)
 
-
+       
 
        
         
@@ -140,4 +151,5 @@ class Gamestate():
             monster.movement(level.get_lvl_walls(), dt)
 
   
-        
+        screen.blit(elements[0], (100, 650))# display health
+        screen.blit(elements[1], (300, 650))# display health
