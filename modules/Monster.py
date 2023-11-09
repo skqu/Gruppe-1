@@ -1,86 +1,25 @@
 import pygame
 import random
 
-import time
 
 class Monster:
-    def __init__(self, screen, screen_x, screen_y):
+    def __init__(self, pos_x, pos_y):
       
         self.image_width = 80 
         self.image_height = 80
         self.hero_image = pygame.image.load("./Graphics/characters/monster.png")
         self.resized_image = pygame.transform.scale(self.hero_image, (self.image_width, self.image_height))
         self.rect = self.resized_image.get_rect()
-        self.rect.center = [200, 300]
+        self.rect.center = [pos_x, pos_y]
 
+        self.movement_speed = 2000
+        self.Health = 100
+        self.health_gui = [0,0]
 
-        self.movement_speed = 5000
-        self.health = 100
+        self.ticks = pygame.time.get_ticks()
+        self.movement_cooldown = 300
+        
 
-
-
-
-
-
-        # # Initialize Pygame
-        # pygame.init()
-
-
-        # # Screen dimensions
-        # self.screen_width = screen_x
-        # self.screen_height = screen_y
-
-        # # Create the screen
-        # #self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
-        # self.screen = screen
-        # #pygame.display.set_caption("Monster Moving")
-
-        # # Load the original image
-        # original_image = pygame.image.load("Graphics\characters\monster.png")
-
-        # # Define the desired width and height for the resized image
-        # desired_width = 85
-        # desired_height = 55
-
-        # # Resize the image
-        # self.resized_image = pygame.transform.scale(original_image, (desired_width, desired_height))
-        # pygame.image.save(self.resized_image, "monster3.png")
-
-        # # Load the monster image
-        # self.monster_image = pygame.image.load("monster3.png")
-        # self.rect = self.monster_image.get_rect()
-
- 
-
-        # # Monster starting position
-        # self.monster_x = random.randint(0, self.screen_width - self.rect.width)
-        # self.monster_y = random.randint(0, self.screen_height - self.rect.height)
-
-        # #self.monster_x = 0
-        # #self.monster_y = 0
-
-        # # Set the maximum number of steps for each direction
-        # self.max_steps = 1  # Adjust this value as needed
-
-
-
-        # #self.rect = self.resized_image.get_rect()
-        # #self.rect.center = [self.monster_x, self.monster_y]
-
-
-        # # Initialize step counters
-        # self.left_steps = 0
-        # self.right_steps = 0
-        # self.up_steps = 0
-        # self.down_steps = 0
-
-        # # Create a clock to control the frame rate
-        # self.clock = pygame.time.Clock()
-
-
-        # #Movement speed
-        # self.movement_speed = 5000
-        # self.health = 50 
 
     def create_strenght(self, Name, Health, Defence, Strength):
         self.Name = Name
@@ -105,9 +44,31 @@ class Monster:
     def Attack(self):
         return self.Strength
     
-    def draw(self):
-         #self.movement()
-         return self.resized_image, self.rect
+    def gui(self):
+        font = pygame.font.Font(None, 20)
+        health_text = font.render(str(f"{self.Health}"), True, "red")
+        
+        new_x = self.rect.x + self.rect.width / 2
+        new_y = self.rect.y - 30
+        self.health_gui[0] = (health_text)
+        self.health_gui[1] = ((new_x, new_y))
+
+        return self.health_gui
+
+    def draw(self, walls, dt, screen):
+        gui = self.gui()
+
+        now = pygame.time.get_ticks()
+        if now - self.ticks >= self.movement_cooldown:
+            self.ticks  = now
+            self.movement(walls, dt)
+
+
+        screen.blit(self.resized_image, self.rect)      
+        
+        print(self.health_gui)
+        screen.blit(gui[0], gui[1])
+       
 
 
     def collision(self, direction, sprite_group): #Check if player is colliding with walls
@@ -131,73 +92,30 @@ class Monster:
                         self.rect.y = hits[0].rect.top - self.rect.height  
 
 
-
     def movement(self, walls_sprite_group, dt):
        # Randomly select a direction
             
             direction = random.choice(['left', 'right', 'up', 'down'])
             
-            # Update the monster's position based on the selected direction and step count
+            # Update the monster's position based on the selected direction
             if direction == 'left':
-                # self.monster_x -= self.movement_speed * dt # Move left
-                # self.left_steps += 1
-                # self.collision("left", walls_sprite_group)
-
                 self.rect.move_ip(-self.movement_speed * dt, 0) 
                 self.collision("left", walls_sprite_group)
                 
             elif direction == 'right':
-                # self.monster_x += self.movement_speed * dt # Move right
-                # self.right_steps += 1
-                # self.collision("right", walls_sprite_group)
-
                 self.rect.move_ip(self.movement_speed * dt, 0)
                 self.collision("right", walls_sprite_group)
 
 
             elif direction == 'up':
-                # self.monster_y -= self.movement_speed * dt # Move up
-                # self.up_steps += 1
-                # #self.collision("left", walls_sprite_group)
-
                 self.rect.move_ip(0, -self.movement_speed  * dt)
                 self.collision("up", walls_sprite_group)
 
             elif direction == 'down':
-                # self.monster_y += self.movement_speed * dt # Move down
-                # self.down_steps += 1
-                # #self.collision("left", walls_sprite_group)
                 self.rect.move_ip(0, self.movement_speed * dt) 
                 self.collision("down", walls_sprite_group)
 
-            # Reset step counters when the maximum number of steps is reached
-            # if self.left_steps == self.max_steps:
-            #     self.left_steps = 0
-            # if self.right_steps == self.max_steps:
-            #     self.right_steps = 0
-            # if self.up_steps == self.max_steps:
-            #     self.up_steps = 0
-            # if self.down_steps == self.max_steps:
-            #     self.down_steps = 0
-
-            # Ensure the monster stays within the screen boundaries
-            #self.rect.x = max(0, min(self.screen_width - self.rect.width, self.monster_x))
-            #self.rect.y = max(0, min(self.screen_height - self.rect.height, self.monster_y)) 
-
-            
-
-    
-    # def run_game(self):
         
-     
-    #         self.screen.fill((0, 0, 0))
-    #         self.screen.blit(self.monster_image, (self.monster_x, self.monster_y))
-    #         pygame.display.update()
-
-    #         self.clock.tick(2)  # Limit the frame rate per second
-
-    #     pygame.quit()
-
 if __name__ == "__main__":
     game = Monster()
     game.run_game()

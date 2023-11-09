@@ -1,155 +1,216 @@
 import pygame
-import time
 from modules.level import Level
 from modules.hero import Hero
 from modules.Monster import Monster
 
 
-class Gamestate():
-    def __init__(self, screen, screen_x, screen_y):
+
+class State_manager():
+    def __init__(self, screen):
         
-        self.gameState = "start_menu"
+        self.screen = screen
+        self.screen_size = screen.get_size()    
+
+        self.states = []
+
+
+        self.tick_timer = pygame.time.get_ticks()
+         
+        self.current_state = "start_menu"
         self.prevGameState = ""
-        self.background = pygame.display.set_mode((1280, 720)) #Background size
-
-        self.level_1 = Level(name = "Level 1", stage_nr = 1, bg_color = "#1a151f", hero_spawn = [300, 300])
-        self.level_2 = Level(name = "Level 2", stage_nr = 2, bg_color = "#1a151f", hero_spawn = [300, 200])
-
-        self.hero = Hero(250, 250)
-        
-        self.monster = Monster(screen, screen_x, screen_y)
-
+        self.current_lvl = 1
 
         self.paused = False
-        self.mouse_pos = (0,0)
+        
+        self.background = pygame.display.set_mode(self.screen_size) #Background size
+        
 
 
-    def state_manager(self, screen, dt, key, tick, cooldown, mouse_pos = (0,0)): #Manages the diffentent states
-        self.mouse_pos = mouse_pos
-        match self.gameState: #Each state is customized in the switch eg - backgroundcolor, display elements
-            case "start_menu":
-                
-                white = (255, 255, 255)
-                black = (0, 0, 0)
-                bg_color = black
-                
-                font = pygame.font.Font("./font/NebulousRegular.ttf", 48)
-                screen_text = font.render("Press Space to Start", True, white)
+    #States
 
+    
+    #Start menu
+        self.start_menu = Menu("pause", "#000000")    
+        self.start_menu.add_text("Press space to start", "./font/NebulousRegular.ttf", 48, "white", (100, 650))
+
+
+    #Pause menu
+        self.pause_menu = Menu("pause", "#000000")
+        self.pause_menu.add_text("Pause", "./font/NebulousRegular.ttf", 70, "white", (100, 100))
+        self.pause_menu.add_text("Press space to continue", "./font/NebulousRegular.ttf", 30, "white", (100, 200))
+        self.pause_menu.add_button("Restart", "./font/NebulousRegular.ttf", 30, "white", (100, 300))
+        self.pause_menu.add_text("DEBUG Press n for next level", "./font/NebulousRegular.ttf", 30, "white", (100, 650))
+
+
+    #Game
+        self.hero = Hero(250, 250)
+
+        #Level 1
+        self.level_1 = Level(name = "Level 1", stage_nr = 1, bg_color = "#1a151f", hero_spawn = [300, 300])
+        self.monster_1_1 = Monster(500, 300)
+
+        self.level_1.add_monsters([self.monster_1_1])
+
+ 
+
+        #Level 2
+        self.level_2 = Level(name = "Level 2", stage_nr = 2, bg_color = "#1a151f", hero_spawn = [300, 200])
+        self.monster_2_1 = Monster(800, 300)
+        self.monster_2_2 = Monster(700, 300)
+
+        self.level_2.add_monsters([self.monster_2_1, self.monster_2_2])
+
+
+        #Level 3
+        self.level_3 = Level(name = "Level 2", stage_nr = 3, bg_color = "#1a151f", hero_spawn = [300, 200])
+        self.monster_3_1 = Monster(800, 300)
+        self.monster_3_2 = Monster(700, 300)
+        self.monster_3_3 = Monster(700, 300)
+
+        self.level_3.add_monsters([self.monster_2_1, self.monster_2_2, self.monster_3_3])
+
+
+    def change_state(self, state):
+        self.current_state = state
+         
+    def next_lvl(self):
+        self.current_lvl += 1
+        print(self.current_lvl)
+
+
+    def draw(self, dt, key, mouse_click = (-1,-1)): #Manages the diffentent states
+        self.mouse_click = mouse_click
+        match self.current_state: #Each state is customized in the switch eg - backgroundcolor, display elements
             
-                self.start_menu(screen, bg_color, screen_text, key)
+            case "start_menu":
+                if key == pygame.K_SPACE:
+                    self.change_state("game")
+                    self.current_lvl = 3
+                    
 
-                self.tick = tick
-                self.cooldown = cooldown
+                self.start_menu.draw(self.screen, self.background)
+
 
             case "pause_game":
-                white = (255, 255, 255)
-                black = (0, 0, 0)
-                bg_color = black
+                if  self.pause_menu.elements[2][1].collidepoint(self.mouse_click): #Restart game
+                    self.mouse_click = (0,0)
+                    self.change_state("start_menu")
+                    self.hero.set_pos(self.level_1.hero_spawn)
+
+                if key == pygame.K_n:
+                    key == pygame.K_0
+                    self.next_lvl()
+                    self.paused = False
+                    self.change_state("game")
+
+
+                if key == pygame.K_SPACE:
+                    key == pygame.K_0
+                    self.paused = False
+                    self.change_state("game")
                 
-                font = pygame.font.Font("./font/NebulousRegular.ttf", 70)
-                title = font.render("Paused", True, white)
-                
-                font = pygame.font.Font("./font/NebulousRegular.ttf", 30)
-                subtext = font.render("Press space to continue", True, white)
+                self.pause_menu.draw(self.screen, self.background )
 
 
-                font = pygame.font.Font("./font/NebulousRegular.ttf", 30)
-                btn_text = font.render("Restart", True, white)
-                btn_rect = btn_text.get_rect(topleft =(100,200))
+            case "game":
+                if key == pygame.K_ESCAPE:
+                    if not self.paused:
+                        self.paused = True
+                        self.change_state("pause_game")
 
-                elemets = title, subtext, btn_text, btn_rect
+                match self.current_lvl:
+                    case 1:
+                        self.level_1.draw(self.screen, self.background, dt)
+                        key = pygame.key.get_pressed()
+                        self.hero.movement(key, self.level_2.get_lvl_walls(), dt)
+                    case 2:
+                        self.level_2.draw(self.screen, self.background, dt)
+                        key = pygame.key.get_pressed()
+                        self.hero.movement(key, self.level_2.get_lvl_walls(), dt)
+                    case 3:
+                        self.level_3.draw(self.screen, self.background, dt)
+                        key = pygame.key.get_pressed()
+                        self.hero.movement(key, self.level_3.get_lvl_walls(), dt)
 
-                self.pause_menu(screen, bg_color, elemets, key)
-            
-            case "restart_game":
-                pass
-    
-            case "lvl1":
-                font = pygame.font.Font("./font/NebulousRegular.ttf", 48)
-                health_text = font.render(self.hero.health, True, white)
 
 
-                elements = health_text
-                self.main(screen = screen, hero = self.hero, dt = dt, level = self.level_1, key = key, monster = self.monster, elements = elemets)
 
-            case "lvl2":
+                self.screen.blit(self.hero.draw()[0], self.hero.draw()[1])
+
                 font = pygame.font.Font(None, 48)
                 health_text = font.render(str(f"{self.hero.health} hp"), True, "#ffffff")
+                self.screen.blit(health_text, (100, 650))# display health
 
-                monster_health_text = font.render(str(f"{self.monster.health} hp"), True, "#ffffff")
-
-                elements = health_text, monster_health_text
                 
 
-                self.main(screen = screen, hero = self.hero, dt = dt, level = self.level_2, key = key, monster = self.monster, elements = elements)
-
-        
 
 
-
-    def start_menu(self, screen ,bg_color, screen_text, key): # Display the start menu
-        if key == pygame.K_SPACE:
-            self.gameState = "lvl2"
-            self.hero.rect.center = self.level_1.hero_spawn 
-
-        self.background.fill(bg_color)
-        screen.blit(screen_text, (100, 550))
-
-
-    def pause_menu(self, screen ,bg_color, elemets, key):
-        print(self.mouse_pos)
-        if  elemets[3].collidepoint(self.mouse_pos): #Restart game
-            self.mouse_pos = (0,0)
-            self.gameState = "lvl1"
-            self.hero.rect.center = self.level_1.hero_spawn 
-
-        if key == pygame.K_SPACE:
-            key == pygame.K_0
-            self.paused = False
-            self.gameState = self.prevGameState
-            
-
-        self.background.fill(bg_color)
-        screen.blit(elemets[0], (100, 50))
-        screen.blit(elemets[1], (100, 120))
-        
-        screen.blit(elemets[2], elemets[3])
-        
-
-            
-    def main(self, screen, hero ,dt, level, key, monster, elements): #The main game state
-
-        if key == pygame.K_ESCAPE:
-            if not self.paused:
-                self.paused = True
-                self.prevGameState = self.gameState
-                self.gameState = "pause_game"
-        #print(monster.draw()[0])
-        #print(monster.draw()[1])
-        
-
-        key = pygame.key.get_pressed()
-        hero.movement(key, level.get_lvl_walls(), dt)
-
-       
-
-       
-        
-
-        self.background.fill(level.bg_color)
-
-        level.get_lvl_floor().draw(screen)
-        level.get_lvl_walls().draw(screen)
-        
-        screen.blit(hero.draw()[0], hero.draw()[1])
-        screen.blit(monster.draw()[0], monster.draw()[1])
-
-        now = pygame.time.get_ticks()
-        if now - self.tick >= self.cooldown:
-            self.tick = now
-            monster.movement(level.get_lvl_walls(), dt)
 
   
-        screen.blit(elements[0], (100, 650))# display health
-        screen.blit(elements[1], (300, 650))# display health
+
+class Gui():
+    def __init__(self, name):
+        self.name = name
+        self.elements = []
+
+    def add_text(self, text, font, size, color = "ffffff", pos = (0,0)):
+        pygame_font = pygame.font.Font(font, size)
+        text = pygame_font.render(text, True, color)
+        elePos = [text, pos]
+
+        self.elements.append(elePos)
+
+    def add_button(self, text, font, size, color = "ffffff", pos = (0,0)):
+        pygame_font = pygame.font.Font(font, size)
+        btn_text = pygame_font.render(text, True, color)
+        btn_rect = btn_text.get_rect(topleft = pos)
+
+        elePos = [btn_text, btn_rect]
+        self.elements.append(elePos)
+
+    def draw (self, screen):
+        for ele in self.elements:
+            screen.blit(ele[0], ele[1])      
+
+
+
+
+
+
+class Menu():
+    def __init__(self, name, bg_color):
+        self.name = name
+        self.bg_color = bg_color
+        self.elements = []
+
+    def add_text(self, text, font, size, color = "ffffff", pos = (0,0)):
+        pygame_font = pygame.font.Font(font, size)
+        text = pygame_font.render(text, True, color)
+        elePos = [text, pos]
+
+        self.elements.append(elePos)
+
+    def add_button(self, text, font, size, color = "ffffff", pos = (0,0)):
+        pygame_font = pygame.font.Font(font, size)
+        btn_text = pygame_font.render(text, True, color)
+        btn_rect = btn_text.get_rect(topleft = pos)
+
+        elePos = [btn_text, btn_rect]
+        self.elements.append(elePos)
+
+    def draw (self, screen, background):
+        background.fill(self.bg_color)
+        for ele in self.elements:
+            screen.blit(ele[0], ele[1])      
+
+
+
+
+
+
+
+
+
+
+
+       

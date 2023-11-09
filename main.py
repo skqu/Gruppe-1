@@ -1,8 +1,11 @@
 import pygame
 from sys import exit
 
-from modules.state import Gamestate
-
+from modules.state import State_manager
+from modules.state import Menu
+from modules.level import Level
+from modules.hero import Hero
+from modules.Monster import Monster
 
 # !! Requires "pytmx" install with pip !!
 
@@ -19,15 +22,12 @@ pygame.display.set_caption("Dungeon Game")
 clock = pygame.time.Clock()
 dt = 0
 
+key_pressed = ""
+mouse_click = (0,0)
+
+state_manager = State_manager(screen)
 
 
-Gamestate = Gamestate(screen, screen_x, screen_y)
-key = None
-mouse_pos = (0,0)
-
-
-tick = pygame.time.get_ticks()
-cooldown = 300    
 
 while True:
     for event in pygame.event.get():
@@ -35,14 +35,14 @@ while True:
             pygame.quit()
             exit()
         if event.type == pygame.KEYDOWN:
-            key = event.key
+            key_pressed = event.key
         if event.type == pygame.MOUSEBUTTONDOWN:
-            print(mouse_pos)
+            mouse_click = pygame.mouse.get_pos()
 
-    Gamestate.state_manager(screen = screen, dt = dt, key = key, mouse_pos = mouse_pos, tick = tick, cooldown = cooldown) #Gets the gamestate from state module and displays it
+    
+    state_manager.draw(dt = dt, key = key_pressed, mouse_click = mouse_click) #Gets the gamestate from state module and displays it
     
     
     dt = clock.tick(60) / 1000 #Deltatime
-    #print(clock.get_fps())
-    
+
     pygame.display.update()  

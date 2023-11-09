@@ -24,10 +24,12 @@ class Hero(pygame.sprite.Sprite):
         self.movement_speed = 400
         self.health = 100
  
+    def set_pos(self, pos = [0,0]):
+         self.rect.center = pos
 
     def collision(self, direction, sprite_group): #Check if player is colliding with walls
         if pygame.sprite.spritecollide(self, sprite_group, False): 
-            
+            print("collision")
             hits = pygame.sprite.spritecollide(self, sprite_group, False) #Get the sprites the player is colliding with
             match direction:
                 case "left":
@@ -45,16 +47,10 @@ class Hero(pygame.sprite.Sprite):
                     if hits:
                         self.rect.y = hits[0].rect.top - self.rect.height  
 
-        
-    
-    def gui (self):
-         pass
 
            
     def movement(self, key, walls_sprite_group, dt):
         
-
-
         if key[pygame.K_LEFT]:
             self.rect.move_ip(-self.movement_speed * dt, 0) 
             self.collision("left", walls_sprite_group)
