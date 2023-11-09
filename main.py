@@ -21,9 +21,13 @@ dt = 0
 
 
 
-Gamestate = Gamestate()
+Gamestate = Gamestate(screen, screen_x, screen_y)
 key = None
 mouse_pos = None
+
+
+tick = pygame.time.get_ticks()
+cooldown = 300    
 
 while True:
     for event in pygame.event.get():
@@ -33,13 +37,12 @@ while True:
         if event.type == pygame.KEYDOWN:
             key = event.key
         if event.type == pygame.MOUSEBUTTONDOWN:
-            mouse_pos = event.pos
             print(mouse_pos)
 
-    Gamestate.state_manager(screen = screen, dt = dt, key = key, mouse_pos = mouse_pos) #Gets the gamestate from state module and displays it
+    Gamestate.state_manager(screen = screen, dt = dt, key = key, mouse_pos = mouse_pos, tick = tick, cooldown = cooldown) #Gets the gamestate from state module and displays it
     
     
     dt = clock.tick(60) / 1000 #Deltatime
-  
-
+    print(clock.get_fps())
+    
     pygame.display.update()  

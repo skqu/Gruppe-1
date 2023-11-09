@@ -9,13 +9,13 @@ class Sprite(pygame.sprite.Sprite):
 
         
         
-class Hero(pygame.sprite.Sprite):
+class Monster(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         super().__init__()
 
         self.image_width = 80 
         self.image_height = 80
-        self.hero_image = pygame.image.load("./Graphics/characters/hero.png")
+        self.hero_image = pygame.image.load("./Graphics\characters\monster.png")
         self.resized_image = pygame.transform.scale(self.hero_image, (self.image_width, self.image_height))
         self.rect = self.resized_image.get_rect()
         self.rect.center = [pos_x, pos_y]
@@ -49,25 +49,8 @@ class Hero(pygame.sprite.Sprite):
     
            
     def movement(self, key, walls_sprite_group, dt):
+        pass
         
-
-
-        if key[pygame.K_LEFT]:
-            self.rect.move_ip(-self.movement_speed * dt, 0) 
-            self.collision("left", walls_sprite_group)
-        
-        if key[pygame.K_RIGHT]:
-            self.rect.move_ip(self.movement_speed * dt, 0)
-            self.collision("right", walls_sprite_group)
-
-        if key[pygame.K_UP]:
-            self.rect.move_ip(0, -self.movement_speed  * dt)
-            self.collision("up", walls_sprite_group)
-
-        if key[pygame.K_DOWN]:
-            self.rect.move_ip(0, self.movement_speed * dt) 
-            self.collision("down", walls_sprite_group)
-
         
     def draw(self): 
         return self.resized_image, self.rect

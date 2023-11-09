@@ -2,11 +2,11 @@ import pygame
 import time
 from modules.level import Level
 from modules.hero import Hero
-
+from modules.Monster import Monster
 
 
 class Gamestate():
-    def __init__(self):
+    def __init__(self, screen, screen_x, screen_y):
         
         self.gameState = "start_menu"
         self.prevGameState = ""
@@ -17,10 +17,14 @@ class Gamestate():
 
         self.hero = Hero(250, 250)
         
+        self.monster = Monster(screen, screen_x, screen_y)
+
+
         self.paused = False
         self.mouse_pos = (0,0)
 
-    def state_manager(self, screen, dt, key, mouse_pos = (0,0)): #Manages the diffentent states
+
+    def state_manager(self, screen, dt, key, tick, cooldown, mouse_pos = (0,0)): #Manages the diffentent states
         self.mouse_pos = mouse_pos
         match self.gameState: #Each state is customized in the switch eg - backgroundcolor, display elements
             case "start_menu":
@@ -34,6 +38,9 @@ class Gamestate():
 
             
                 self.start_menu(screen, bg_color, screen_text, key)
+
+                self.tick = tick
+                self.cooldown = cooldown
 
             case "pause_game":
                 white = (255, 255, 255)
@@ -59,11 +66,12 @@ class Gamestate():
                 pass
     
             case "lvl1":
-                self.main(screen = screen, hero = self.hero, dt = dt, level = self.level_1, key = key)
+                
+                self.main(screen = screen, hero = self.hero, dt = dt, level = self.level_1, key = key, monster = self.monster)
 
             case "lvl2":
                 
-                 self.main(screen = screen, hero = self.hero, dt = dt, level = self.level_2, key = key)
+                self.main(screen = screen, hero = self.hero, dt = dt, level = self.level_2, key = key, monster = self.monster), 
 
         
 
@@ -99,20 +107,24 @@ class Gamestate():
         
 
             
-    def main(self, screen, hero ,dt, level, key): #The main game state
+    def main(self, screen, hero ,dt, level, key, monster, timer = 0): #The main game state
 
         if key == pygame.K_ESCAPE:
-            
             if not self.paused:
                 self.paused = True
                 self.prevGameState = self.gameState
                 self.gameState = "pause_game"
- 
-
+        print(monster.draw()[0])
+        print(monster.draw()[1])
+        
 
         key = pygame.key.get_pressed()
         hero.movement(key, level.get_lvl_walls(), dt)
 
+
+
+       
+        
 
         self.background.fill(level.bg_color)
 
@@ -120,7 +132,12 @@ class Gamestate():
         level.get_lvl_walls().draw(screen)
         
         screen.blit(hero.draw()[0], hero.draw()[1])
-            
+        screen.blit(monster.draw()[0], monster.draw()[1])
 
+        now = pygame.time.get_ticks()
+        if now - self.tick >= self.cooldown:
+            self.tick = now
+            monster.movement(level.get_lvl_walls(), dt)
 
-
+  
+        
