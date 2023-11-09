@@ -23,7 +23,7 @@ dt = 0
 
 Gamestate = Gamestate(screen, screen_x, screen_y)
 key = None
-mouse_pos = None
+mouse_pos = (0,0)
 
 
 tick = pygame.time.get_ticks()

@@ -98,7 +98,7 @@ class Gamestate():
 
 
     def pause_menu(self, screen ,bg_color, elemets, key):
-        
+        print(self.mouse_pos)
         if  elemets[3].collidepoint(self.mouse_pos): #Restart game
             self.mouse_pos = (0,0)
             self.gameState = "lvl1"
