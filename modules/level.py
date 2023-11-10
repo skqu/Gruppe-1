@@ -35,8 +35,6 @@ class Level():
         return self.create_lvl(path)
 
 
-    
-
     def create_lvl(self, lvlData): # Creates the level from the level data and textures
         tmx_data = load_pygame(lvlData)
         lvl_walls_sprite_group = pygame.sprite.LayeredUpdates()
@@ -70,5 +68,4 @@ class Level():
         self.get_lvl_walls().draw(screen)
 
         for monster in self.monsters:
-            #screen.blit(monster.draw(self.get_lvl_walls(), dt, screen)[0] monster.draw(self.get_lvl_walls(), dt, screen)[1])
             monster.draw(self.get_lvl_walls(), dt, screen)

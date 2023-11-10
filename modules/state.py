@@ -28,7 +28,7 @@ class State_manager():
 
     #States
 
-    
+
     #Start menu
         self.start_menu = Menu("pause", "#000000")    
         self.start_menu.add_text("Press space to start", "./font/NebulousRegular.ttf", 48, "white", (100, 650))
@@ -78,14 +78,14 @@ class State_manager():
         print(self.current_lvl)
 
 
-    def draw(self, dt, key, mouse_click = (-1,-1)): #Manages the diffentent states
+    def draw(self, dt, key, mouse_click = (-1,-1)): #draws the diffentent states
         self.mouse_click = mouse_click
-        match self.current_state: #Each state is customized in the switch eg - backgroundcolor, display elements
+        match self.current_state: 
             
             case "start_menu":
                 if key == pygame.K_SPACE:
                     self.change_state("game")
-                    self.current_lvl = 3
+                    self.current_lvl = 1
                     
 
                 self.start_menu.draw(self.screen, self.background)
@@ -93,16 +93,16 @@ class State_manager():
 
             case "pause_game":
                 if  self.pause_menu.elements[2][1].collidepoint(self.mouse_click): #Restart game
-                    self.mouse_click = (0,0)
+                    self.mouse_click = (-1,-1)
                     self.change_state("start_menu")
                     self.hero.set_pos(self.level_1.hero_spawn)
+                    self.paused = False
 
                 if key == pygame.K_n:
                     key == pygame.K_0
                     self.next_lvl()
                     self.paused = False
                     self.change_state("game")
-
 
                 if key == pygame.K_SPACE:
                     key == pygame.K_0
@@ -133,8 +133,6 @@ class State_manager():
                         self.hero.movement(key, self.level_3.get_lvl_walls(), dt)
 
 
-
-
                 self.screen.blit(self.hero.draw()[0], self.hero.draw()[1])
 
                 font = pygame.font.Font(None, 48)
@@ -142,40 +140,6 @@ class State_manager():
                 self.screen.blit(health_text, (100, 650))# display health
 
                 
-
-
-
-
-  
-
-class Gui():
-    def __init__(self, name):
-        self.name = name
-        self.elements = []
-
-    def add_text(self, text, font, size, color = "ffffff", pos = (0,0)):
-        pygame_font = pygame.font.Font(font, size)
-        text = pygame_font.render(text, True, color)
-        elePos = [text, pos]
-
-        self.elements.append(elePos)
-
-    def add_button(self, text, font, size, color = "ffffff", pos = (0,0)):
-        pygame_font = pygame.font.Font(font, size)
-        btn_text = pygame_font.render(text, True, color)
-        btn_rect = btn_text.get_rect(topleft = pos)
-
-        elePos = [btn_text, btn_rect]
-        self.elements.append(elePos)
-
-    def draw (self, screen):
-        for ele in self.elements:
-            screen.blit(ele[0], ele[1])      
-
-
-
-
-
 
 class Menu():
     def __init__(self, name, bg_color):

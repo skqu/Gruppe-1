@@ -33,11 +33,11 @@ class Hero(pygame.sprite.Sprite):
             hits = pygame.sprite.spritecollide(self, sprite_group, False) #Get the sprites the player is colliding with
             match direction:
                 case "left":
-                        if hits:
+                        if hits: 
                             self.rect.x = hits[0].rect.right 
                 case "right":
                     if hits:
-                        self.rect.x = hits[0].rect.left - self.rect.width
+                        self.rect.x = hits[0].rect.left - self.rect.width 
                 
                 case "up":
                     if hits:
