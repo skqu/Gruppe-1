@@ -1,0 +1,11 @@
+ 
+
+If self.pause: 
+
+     self.pause= True  
+
+Else : 
+
+     self.pause= False 
+
+ 
