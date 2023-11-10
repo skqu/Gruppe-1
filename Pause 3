@@ -1,0 +1,10 @@
+if key == pygame.K_ESCAPE:
+If self.pause: 
+
+     self.pause= True  
+
+Else : 
+
+     self.pause= False 
+
+ 
