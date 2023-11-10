@@ -13,7 +13,6 @@ class State_manager():
 
         self.states = []
 
-
         self.tick_timer = pygame.time.get_ticks()
          
         self.current_state = "start_menu"
@@ -43,10 +42,10 @@ class State_manager():
 
 
     #Game
-        self.hero = Hero(250, 250)
+        self.hero = Hero(250, 200)
 
         #Level 1
-        self.level_1 = Level(name = "Level 1", stage_nr = 1, bg_color = "#1a151f", hero_spawn = [300, 300])
+        self.level_1 = Level(name = "Level 1", stage_nr = 1, bg_color = "#1a151f", hero_spawn = [200, 100])
         self.monster_1_1 = Monster(500, 300)
 
         self.level_1.add_monsters([self.monster_1_1])
@@ -54,16 +53,16 @@ class State_manager():
  
 
         #Level 2
-        self.level_2 = Level(name = "Level 2", stage_nr = 2, bg_color = "#1a151f", hero_spawn = [300, 200])
-        self.monster_2_1 = Monster(800, 300)
-        self.monster_2_2 = Monster(700, 300)
+        self.level_2 = Level(name = "Level 2", stage_nr = 2, bg_color = "#1a151f", hero_spawn = [300, 100])
+        self.monster_2_1 = Monster(900, 300)
+        self.monster_2_2 = Monster(900, 350)
 
         self.level_2.add_monsters([self.monster_2_1, self.monster_2_2])
 
 
         #Level 3
-        self.level_3 = Level(name = "Level 2", stage_nr = 3, bg_color = "#1a151f", hero_spawn = [300, 200])
-        self.monster_3_1 = Monster(800, 300)
+        self.level_3 = Level(name = "Level 2", stage_nr = 3, bg_color = "#1a151f", hero_spawn = [300, 100])
+        self.monster_3_1 = Monster(850, 300)
         self.monster_3_2 = Monster(700, 300)
         self.monster_3_3 = Monster(700, 300)
 
@@ -75,7 +74,8 @@ class State_manager():
          
     def next_lvl(self):
         self.current_lvl += 1
-        print(self.current_lvl)
+        
+       
 
 
     def draw(self, dt, key, mouse_click = (-1,-1)): #draws the diffentent states

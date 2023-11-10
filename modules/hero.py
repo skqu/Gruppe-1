@@ -20,7 +20,6 @@ class Hero(pygame.sprite.Sprite):
         self.rect = self.resized_image.get_rect()
         self.rect.center = [pos_x, pos_y]
 
-
         self.movement_speed = 400
         self.health = 100
  
@@ -29,12 +28,12 @@ class Hero(pygame.sprite.Sprite):
 
     def collision(self, direction, sprite_group): #Check if player is colliding with walls
         if pygame.sprite.spritecollide(self, sprite_group, False): 
-            print("collision")
+            #print("collision")
             hits = pygame.sprite.spritecollide(self, sprite_group, False) #Get the sprites the player is colliding with
             match direction:
                 case "left":
-                        if hits: 
-                            self.rect.x = hits[0].rect.right 
+                    if hits: 
+                        self.rect.x = hits[0].rect.right 
                 case "right":
                     if hits:
                         self.rect.x = hits[0].rect.left - self.rect.width 

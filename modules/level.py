@@ -1,6 +1,6 @@
 import pygame
 from pytmx.util_pygame import load_pygame
-from modules.hero import Hero
+
 
 
 class Tile(pygame.sprite.Sprite): #Cretes the tiles
@@ -45,12 +45,12 @@ class Level():
         for layer in tmx_data.visible_layers:
             if hasattr(layer, "data"):
                 for x,y,surf in layer.tiles():
-                        surf2 = pygame.transform.scale(surf, (tile_size, tile_size))
-                        pos = (x * tile_size, y * tile_size)
-                        if layer.name in ('Floor'):
-                            Tile(pos = pos, surf = surf2, groups = lvl_floor_sprite_group)
-                        elif layer.name in ('Walls'):
-                            Tile(pos = pos, surf = surf2, groups = lvl_walls_sprite_group)
+                    surf2 = pygame.transform.scale(surf, (tile_size, tile_size))
+                    pos = (x * tile_size, y * tile_size)
+                    if layer.name in ('Floor'):
+                        Tile(pos = pos, surf = surf2, groups = lvl_floor_sprite_group)
+                    elif layer.name in ('Walls'):
+                        Tile(pos = pos, surf = surf2, groups = lvl_walls_sprite_group)
 
         self.lvl_floor_sprite_group = lvl_floor_sprite_group
         self.lvl_walls_sprite_group = lvl_walls_sprite_group

@@ -66,7 +66,7 @@ class Monster:
 
         screen.blit(self.resized_image, self.rect)      
         
-        print(self.health_gui)
+        
         screen.blit(gui[0], gui[1])
        
 

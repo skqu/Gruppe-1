@@ -2,10 +2,7 @@ import pygame
 from sys import exit
 
 from modules.state import State_manager
-from modules.state import Menu
-from modules.level import Level
-from modules.hero import Hero
-from modules.Monster import Monster
+
 
 # !! Requires "pytmx" install with pip !!
 
@@ -26,7 +23,6 @@ key_pressed = ""
 mouse_click = (0,0)
 
 state_manager = State_manager(screen)
-
 
 
 while True:
