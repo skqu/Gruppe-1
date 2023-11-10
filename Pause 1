@@ -1,0 +1,26 @@
+ case "pause_game":
+                if  self.pause_menu.elements[2][1].collidepoint(self.mouse_click): #Restart game
+                    self.mouse_click = (0,0)
+                    self.change_state("start_menu")
+                    self.hero.set_pos(self.level_1.hero_spawn)
+
+                if key == pygame.K_n:
+                    key == pygame.K_0
+                    self.next_lvl()
+                    self.paused = False
+                    self.change_state("game")
+
+
+                if key == pygame.K_SPACE:
+                    key == pygame.K_0
+                    self.paused = False
+                    self.change_state("game")
+                
+                self.pause_menu.draw(self.screen, self.background )
+
+
+            case "game":
+                if key == pygame.K_ESCAPE:
+                    if not self.paused:
+                        self.paused = True
+                        self.change_state("pause_game")
