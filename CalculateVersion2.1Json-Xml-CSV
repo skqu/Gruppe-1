@@ -1,0 +1,377 @@
+import tkinter as tk
+from tkinter import ttk
+from math import sqrt
+from graphics import *
+import re
+import json
+import os
+import csv
+import xml.etree.ElementTree as ET
+
+
+
+
+
+class Calculator():
+    def __init__(self) -> None:
+        Gui()
+    
+    def calculate(self, input):
+        try: 
+            return str(eval(input))
+        except:
+            print("exeption")
+
+class Gui(Calculator):
+    def __init__(self):
+        self.root = tk.Tk()
+        self.root.title("Calculator")
+        self.handler = Handler()
+        self.buildLayout()
+        self.style()
+        self.Json_handler = JsonFileManager()
+        
+
+
+        self.root.mainloop()
+
+    def buildLayout(self):
+
+        # DISPLAY
+
+        self.display = tk.Label(self.root, text = "0", font=("Arial", 32), anchor="e", justify="right", width=12)
+        self.display.pack()
+
+
+        self.display.pack(padx=10, pady=10)
+        self.display.focus_set()
+
+        # Frame for numbers and operators
+        self.numpad_frame = tk.Frame(self.root)
+        self.numpad_frame.pack()
+        
+        
+        
+        #Numpad
+        self.list_buttons = [
+            "(", ")", "C", "\u2190",
+            "\u221A", "x^2", "x^x", "/",
+            "7", "8", "9", "*",
+            "4", "5", "6", "-",
+            "1", "2", "3", "+",
+            "+/-", "0", ".", "="
+        ]
+
+        self.buildButtons(self.list_buttons, self.numpad_frame, 4) 
+
+
+    def buildButtons(self, list_buttons, frame, maxCol = 1): #Create buttons for a frame 
+        row = 0
+        col = 0
+
+        for button_text in list_buttons:
+            button = tk.Button(frame, text=button_text, font=("Arial", 16), width=6, height=2, borderwidth=0)
+            button.grid(row=row, column=col, padx=2, pady=2)
+            button.bind("<Button-1>", self.events)
+            col += 1
+            if col == maxCol:
+                col = 0
+                row += 1
+    
+    def displayText(self, text):
+        
+
+        if len(self.display.cget("text")) == 0:
+            newText = 0
+        
+        else:
+                
+            if self.display.cget("text") == "0":
+                newText = text
+             
+            else:
+                newText = self.display.cget("text") + text
+             
+                    
+        self.display.config(text = newText)
+     
+    
+
+    def events(self, event): #Button events
+        newText = ""
+        text = event.widget.cget("text")
+        self.display.focus_set()
+        
+        
+
+        match text:
+            case "=":
+                new = self.display.cget("text").replace('\u221A', 'sqrt')
+                new = new.replace('^', '**')
+
+                newText = self.calculate(new)
+                self.display.config(text = newText)
+                #print("testA",newText, new)
+                self.handler.save_result(newText, new)
+                self.handler.display_results()
+                self.Json_handler.add_data(newText, new)
+#                self.handler.Json_results(newText, new)
+                #self.handler.
+
+            case "C":
+                self.display.config(text = "0")
+                
+
+            case "\u2190": #Backspace
+
+                newText = self.display.cget("text")[:-1]
+                self.display.config(text = newText)
+                if len(self.display.cget("text")) == 0:
+                    self.display.config(text = "0")
+                   
+            case "+/-":
+                if self.display.cget("text")[0] != "-":
+                    newText = "-" + self.display.cget("text")
+                    
+                else:
+                    newText = self.display.cget("text")[1:]
+                    
+
+                self.display.config(text = newText)
+                
+            case "\u221A": #Squareroot
+                newText = text + "("
+                self.displayText(newText)
+               
+            
+            case "x^2": 
+                newText = "^2"
+                self.displayText(newText)
+                
+
+            case "x^x":
+                print("SAdasdsdsd")
+                newText = "^"
+                self.displayText(newText)
+                
+            
+            case _:
+                newText = text
+                self.displayText(newText)
+               
+
+    def styleChildren(self, widget, bg_color, text_color):
+        widget.configure(bg=bg_color)
+        if isinstance(widget, (tk.Label, tk.Button)):
+            widget.configure(fg=text_color)
+        if isinstance(widget, tk.Frame):
+            for child in widget.winfo_children():
+                self.styleChildren(child, bg_color, text_color)
+                    
+
+    def style(self):
+
+        backgroundColor = "#262626"
+        fontColor = "#ffffff"
+
+        self.styleChildren(self.numpad_frame, "#3d3d3d", fontColor)
+
+        self.root.config(background = backgroundColor)
+        self.display.config(background = backgroundColor)
+        self.numpad_frame.config(background = backgroundColor)
+        self.display.config(fg = fontColor)
+        
+class Handler():
+       
+    def __init__(self):
+       
+        # Initialize an empty list to store results
+        self.result_list = []
+        self.json_manager= JsonFileManager()
+        self.csv_manager = CsvFileManager()
+        self.xml_manager = XmlFileManager()
+
+      
+    def save_result(self, newText, new):
+        # Save the result in the list
+        self.result_list.append((newText, new))
+
+        # Keep only the last 10 results
+        if len(self.result_list) > 10:
+            self.result_list = self.result_list[-10:]
+
+        # Save all results to JSON, CSV, and XML
+        results_to_save = [
+            (result_text, result_data)
+            for result_text, result_data in self.result_list
+        ]
+
+        # Save to JSON
+        for result_text, result_data in results_to_save:
+            self.json_manager.add_data(result_text, result_data)
+
+        # Save to CSV
+            self.csv_manager.save_to_csv("results.csv", results_to_save)
+
+        # Save to XML
+            self.xml_manager.save_to_xml(results_to_save)
+
+        print("test3")
+            
+    def display_results(self):
+        print("Results:")
+        # Display up to the last 10 results
+        for i, result_pair in enumerate(reversed(self.result_list)):
+            # Display results in reverse order (latest calculation first)
+            print(f"{i + 1}. {result_pair[0]} = {result_pair[1]}")
+
+            
+class JsonFileManager:
+    def __init__(self, filename="Causontest", initial_data=None):
+        self.filename = filename
+        self.data = initial_data or {}
+        self.load_data()
+
+    def load_data(self):
+        try:
+            with open(self.filename, "r") as file:
+                self.data = json.load(file)
+        except FileNotFoundError:
+            # Handle the case where the file doesn't exist
+            self.save_data()
+
+    def save_data(self):
+        with open(self.filename, "w") as file:
+            json.dump(self.data, file, indent=2)
+    def add_data(self, key, value):
+        self.load_data()
+        # Update the existing data or add a new key-value pair
+        self.data[key] = value
+        # Save the updated data
+        self.save_data()
+
+    def get_all_data(self):
+        # Load existing data
+        self.load_data()
+        return self.data
+
+    def get_all_data(self):
+        return self.data
+class CsvFileManager:
+     def save_to_csv(self, filename, data):
+       try:
+           with open(filename, mode='w', newline='') as file:
+               writer = csv.writer(file)
+               # Write header
+               writer.writerow(["Expression", "Value"])
+                #Write data
+               writer.writerows(data)
+       except Exception as e:
+           print(f"Error saving to CSV: {e}")
+
+
+class XmlFileManager:
+    def __init__(self, filename="results.xml"):
+        self.filename = filename
+
+    def save_to_xml(self, data):
+        try:
+            root = ET.Element("Results")
+            for result in data:
+                item = ET.SubElement(root, "Result")
+                key, value = result
+                ET.SubElement(item, "Expression").text = str(key)
+                ET.SubElement(item, "Value").text = str(value)
+
+            tree = ET.ElementTree(root)
+            tree.write(self.filename)
+        except Exception as e:
+            print(f"Error saving to XML: {e}")
+
+
+class DisplayFrame:
+    def __init__(self, filename="Causontest"):
+        self.win = GraphWin("Historik", 400, 600)
+        self.filename = filename
+        self.data = self.load_data()
+
+    def load_data(self):
+        try:
+            with open(self.filename, "r") as file:
+                data = json.load(file)
+                return data
+        except FileNotFoundError:
+            print(f"File {self.filename} not found.")
+            return {}
+        except json.JSONDecodeError as e:
+            print(f"Error decoding JSON in file {self.filename}: {e}")
+            return {}
+
+    def display_data(self):
+        y_coordinate = 30  # Start y-coordinate
+        for key, value in self.data.items():
+            if isinstance(value, dict):  # If value is a dictionary, it's a nested result
+                for inner_key, inner_value in value.items():
+                    text = Text(Point(200, y_coordinate), f"{inner_key}: {inner_value}")
+                    text.draw(self.win)
+                    y_coordinate += 30  # Increment y-coordinate
+            else:
+                text = Text(Point(200, y_coordinate), f"{key}: {value}")
+                text.draw(self.win)
+                y_coordinate += 30  # Increment y-coordinate
+
+class Graphics_Start:
+    def __init__(self, root):
+        self.root = root
+        root.title("Start Calculator")
+        self.result_var = tk.StringVar()
+        self.result_var.set("0")
+        
+        
+      
+        # Create calculator buttons
+        buttons = [
+            'Start Lommeregner',
+            'Afslut Lommeregner',
+            'Historik',
+            'List', 'jSon', 'XML', 'CSV', 'SQL'
+        ]
+
+        row, col = 1, 0
+        for button in buttons:
+            tk.Button(root, text=button, command=lambda b=button: self.on_button_click(b), padx=30, pady=20, font=("Arial", 20)).grid(row=row, column=col)
+            col += 1
+            if col > 3:
+                col = 0
+                row += 1
+
+    def on_button_click(self, button):
+        if button == 'Start Lommeregner':
+            self.GG=Gui()
+            #calculator_instance = Calculator()
+        elif button == 'Afslut Lommeregner':
+            self.result_var.set("0")
+        elif button == 'List':
+            self.result_var.set("0")
+        elif button == 'jSon':
+            self.result_var.set("0")
+        elif button == 'XML':
+            self.result_var.set("0")
+        elif button == 'CSV':
+            self.result_var.set("0")
+        elif button == 'SQL':
+            self.result_var.set("0")
+        
+
+  
+
+class Main:
+    def __init__(self):
+        self.root = tk.Tk()
+        self.graphics = Graphics_Start(self.root)
+        self.root.mainloop()
+
+if __name__ == "__main__":
+    main_app = Main()
+
+
