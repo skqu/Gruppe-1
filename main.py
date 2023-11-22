@@ -6,6 +6,7 @@ from modules.state import State_manager
 
 # !! Requires "pytmx" install with pip !!
 
+# Ellers udmærket struktur. Gør det let at læse igennem. 
 
 pygame.init()
 
