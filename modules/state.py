@@ -6,6 +6,7 @@ from modules.Monster import Monster
 
 
 class State_manager():
+    # Hvad sker der med state manager hvis i opretter en instance flere forskellige steder ?
     def __init__(self, screen):
         
         self.screen = screen
@@ -27,7 +28,7 @@ class State_manager():
 
     #States
 
-
+# I kunne have oprettet en game class som har en metode, AddMenu
     #Start menu
         self.start_menu = Menu("pause", "#000000")    
         self.start_menu.add_text("Press space to start", "./font/NebulousRegular.ttf", 48, "white", (100, 650))
@@ -44,6 +45,7 @@ class State_manager():
     #Game
         self.hero = Hero(250, 200)
 
+        # Oprettelse af level kunne være håndteret i loops og lister. 
         #Level 1
         self.level_1 = Level(name = "Level 1", stage_nr = 1, bg_color = "#1a151f", hero_spawn = [200, 100])
         self.monster_1_1 = Monster(500, 300)
@@ -77,7 +79,7 @@ class State_manager():
         
        
 
-
+    # Vær opmærksom på jeres navngivning af metoder - menu (start_menu) har også en draw. Men det er ikke recursive tilbage til denne. 
     def draw(self, dt, key, mouse_click = (-1,-1)): #draws the diffentent states
         self.mouse_click = mouse_click
         match self.current_state: 
