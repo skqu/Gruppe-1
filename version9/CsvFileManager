@@ -1,0 +1,16 @@
+### CsvFileManager class in only saving the results from Calculator in
+# the right format and syntaks ###
+import csv
+
+
+class CsvFileManager:
+     def save_to_csv(self, filename, data):
+       try:
+           with open(filename, mode='w', newline='') as file:
+               writer = csv.writer(file)
+               # Write header
+               writer.writerow(["Value","Expression"])
+                #Write data
+               writer.writerows(data)
+       except Exception as e:
+           print(f"Error saving to CSV: {e}")
