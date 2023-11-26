@@ -1,0 +1,81 @@
+### FileDisplayHandlerXML class is createt to find, load and display data/result from a csv file in the root.
+# This class here is using TKinter for display. The reason that there is a display handler class and a 
+# file handler class for each xml, csv and json, is that Im not expirience enough to compose those in 
+# the same class. And because I wrote them in different time   ###
+
+
+
+
+import tkinter as tk
+from tkinter import ttk
+import xml.etree.ElementTree as ET
+import xml.dom.minidom
+
+class FileDisplayHandlerXML:
+    def __init__(self):
+        self.root = tk.Tk()
+        self.root.title("XML Display")
+
+        self.frame = ttk.Frame(self.root)
+        self.frame.grid(row=0, column=0, sticky="nsew")
+        file_type='xml'
+        # Create a treeview widget
+        self.tree = ttk.Treeview(self.frame, columns=("Value","Expression"))
+        self.tree.heading("#0", text="XML-File")
+        self.tree.heading("Expression", text="Expression")
+        self.tree.heading("Value", text="Value")
+        self.tree.grid(row=0, column=0, sticky="nsew")
+        print("Running XML display")
+
+         # Buttons to load and display files
+        self.load_button = ttk.Button(self.frame, text="Load XML Data", command=self.load_file)
+        self.load_button.grid(row=1, column=0,pady=5)
+
+        # Variable to store loaded file data
+        self.file_data = None
+        self.file_type = file_type   
+        
+    def display_xml_data(self):
+        file_path = "XMLresults.xml"  # Assuming the file is in the root directory
+        if file_path:
+            self.csv_data = self.load_xml(file_path)
+            # Update the treeview with loaded data
+            self.update_treeview()
+
+    def load_xml(self, file_path):
+        tree = ET.parse(file_path)
+        root = tree.getroot()
+        data = []
+        for item in root.findall("Result"):
+            expression = item.find("Expression").text
+            value = item.find("Value").text
+            data.append((expression, value))
+        return data
+
+                
+    def update_treeview(self):
+        # Clear existing items in the treeview
+        for item in self.tree.get_children():
+            self.tree.delete(item)
+
+        if self.file_data:
+            if isinstance(self.file_data, list):
+                for i, (expression, value) in enumerate(self.file_data):
+                    self.tree.insert("", i, values=(expression, value), text=f"Row {i+1}")
+            elif isinstance(self.file_data, dict):
+                header = self.file_data.get("header", [])
+                data = self.file_data.get("data", [])
+
+                # Insert header
+                self.tree.insert("", 0, values=header, text="Header")
+
+                # Insert data rows
+                for i, row in enumerate(data):
+                    self.tree.insert("", i + 1, values=row, text=f"Row {i + 1}")
+
+    def run(self):
+        self.root.mainloop()
+
+   
+
+
