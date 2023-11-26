@@ -1,0 +1,65 @@
+### CsvDiaplayHandler class is createt to find, load and display data/result from a csv file in the root.
+# This class here is using TKinter for display. The reason that there is a display handler class and a 
+# file handler class for each xml, csv and json, is that Im not expirience enough to compose those in 
+# the same class. And because I wrote them in different time   ###
+
+import tkinter as tk
+from tkinter import ttk
+import csv
+
+
+class CsvDisplayHandler:
+    def __init__(self):
+        self.root = tk.Tk()
+        self.root.title("CSV Display")
+
+        self.frame = ttk.Frame(self.root)
+        self.frame.grid(row=0, column=0, sticky="nsew")
+
+        # Create a treeview widget
+        self.tree = ttk.Treeview(self.frame, columns=("Column1", "Column2"))
+        self.tree.heading("#0", text="File")
+        self.tree.heading("Column1", text="Column1")
+        self.tree.heading("Column2", text="Column2")
+        self.tree.grid(row=0, column=0, sticky="nsew")
+        print("Running CSV display")
+
+        # Button to display CSV data
+        self.display_button = ttk.Button(self.frame, text="Load CSV Data", command=self.display_csv_data)
+        self.display_button.grid(row=1, column=0, pady=5)
+
+        # Variable to store loaded CSV data
+        self.csv_data = None
+
+    def display_csv_data(self):
+        file_path = "CSVresults.csv"  # Assuming the file is in the root directory
+        if file_path:
+            self.csv_data = self.load_csv(file_path)
+            # Update the treeview with loaded data
+            self.update_treeview()
+
+    def load_csv(self, file_path):
+        with open(file_path, "r") as file:
+            reader = csv.reader(file)
+            header = next(reader)
+            data = [row for row in reader]
+        return {"header": header, "data": data}
+
+    def update_treeview(self):
+        # Clear existing items in the treeview
+        for item in self.tree.get_children():
+            self.tree.delete(item)
+
+        if self.csv_data:
+            header = self.csv_data["header"]
+            data = self.csv_data["data"]
+
+            # Insert header
+            self.tree.insert("", 0, values=header, text="Header")
+
+            # Insert data rows
+            for i, row in enumerate(data):
+                self.tree.insert("", i + 1, values=row, text=f"Row {i + 1}")
+
+    def run(self):
+        self.root.mainloop()
