@@ -1,0 +1,36 @@
+### JsonFileManager class in only saving the results from Calculator in
+# the right format and syntaks ###
+
+
+
+import json
+
+
+class JsonFileManager:
+    def __init__(self, filename="jSontest", initial_data=None):
+        self.filename = filename
+        self.data = initial_data or {}
+        self.load_data()
+
+    def load_data(self):
+        try:
+            with open(self.filename, "r") as file:
+                self.data = json.load(file)
+        except FileNotFoundError:
+            # Handle the case where the file doesn't exist
+            self.save_data()
+
+    def save_data(self):
+        with open(self.filename, "w") as file:
+            json.dump(self.data, file, indent=2)
+    def add_data(self, key, value):
+        self.load_data()
+        # Update the existing data or add a new key-value pair
+        self.data[key] = value
+        # Save the updated data
+        self.save_data()
+
+    def get_all_data(self):
+        # Load existing data
+        self.load_data()
+        return self.data
