@@ -1,0 +1,51 @@
+### Handler class is createt to handle all the results from the Calculator and to 
+# save them in the correct syntax through Filemanager class for each xml, csv, json
+# ####
+
+from CsvFileManager  import CsvFileManager 
+from XmlFileManager import XmlFileManager 
+from JsonFileManager import JsonFileManager    
+
+
+
+class Handler():
+       
+    def __init__(self, json_manager):
+        self.result_list = []
+        self.json_manager = json_manager
+        self.csv_manager = CsvFileManager()
+        self.xml_manager = XmlFileManager()
+
+      
+    def save_result(self, newText, new):
+        # Save the result in the list
+        self.result_list.append((newText, new))
+
+        # Keep only the last 10 results
+        if len(self.result_list) > 10:
+            self.result_list = self.result_list[-10:]
+
+        # Save all results to JSON, CSV, and XML
+        results_to_save = [
+            (result_text, result_data)
+            for result_text, result_data in self.result_list
+        ]
+
+        # Save to JSON
+        for result_text, result_data in results_to_save:
+            self.json_manager.add_data(result_text, result_data)
+
+        # Save to CSV
+            self.csv_manager.save_to_csv("CSVresults.csv", results_to_save)
+
+        # Save to XML
+            self.xml_manager.save_to_xml(results_to_save)
+
+        print("test3")
+            
+    def display_results(self):
+        print("Results:")
+        # Display up to the last 10 results
+        for i, result_pair in enumerate(reversed(self.result_list)):
+            # Display results in reverse order (latest calculation first)
+            print(f"{i + 1}. {result_pair[0]} = {result_pair[1]}")
