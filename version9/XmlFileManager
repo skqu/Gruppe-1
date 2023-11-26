@@ -1,0 +1,77 @@
+### XmlFileManager class in only saving the results from Calculator in
+# the right format and syntaks ###
+
+#import tkinter as tk
+#from tkinter import ttk
+#import tkinter.filedialog
+#from math import sqrt
+#from graphics import *
+# import re
+# import json
+# import os
+# import csv
+import xml.etree.ElementTree as ET
+import xml.dom.minidom
+# import base64
+# import datetime
+# from graphics import Point, Text
+# import time
+
+
+class XmlFileManager:
+    def __init__(self, xml_filename="XMLresults.xml"):
+        self.filename = xml_filename
+        self.xml_filename = xml_filename
+        self.data = []
+       # self.load_xml_data()
+        
+        
+    def save_to_xml(self, data):
+        try:
+            root_xml = ET.Element("XMLresults")
+            for result in data:
+                item = ET.SubElement(root_xml, "Result")
+                key, value = result
+                ET.SubElement(item, "Expression").text = str(key)
+                ET.SubElement(item, "Value").text = str(value)
+
+            tree = ET.ElementTree(root_xml)
+            tree.write(self.xml_filename)
+
+        except Exception as e:
+            print(f"Error saving to XML: {e}")
+
+
+    # def load_xml_data(self):
+    #     try:
+    #         # Load and display XML data
+    #         tree_xml = ET.parse(self.xml_filename)
+    #         root_xml = tree_xml.getroot()
+    #         for item in root_xml.findall('Result'):
+    #             expression = item.find('Expression').text
+    #             value = item.find('Value').text
+    #             self.data.append((expression, value))
+    #     except FileNotFoundError:
+    #         print(f"File not found.")
+    #     except Exception as e:
+    #         print(f"Error: {e}")
+
+    # def display_xml_data(self):
+    #     root_xml_display = tk.Tk()
+    #     root_xml_display.title("XML Historik")
+
+    #     # Create a treeview widget
+    #     tree = ttk.Treeview(root_xml_display, columns=("Expression", "Value"))
+    #     tree.heading("#0", text="XML Results")
+    #     tree.heading("Expression", text="Expression")
+    #     tree.heading("Value", text="Value")
+
+    #     tree.pack(expand=True, fill="both")
+
+    #     # Update the treeview with loaded data
+    #     for i, (expression, value) in enumerate(self.data):
+    #         tree.insert("", i, values=(expression, value), text=f"Row {i + 1}")
+
+    #     root_xml_display.mainloop()
+
+
